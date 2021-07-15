@@ -16,16 +16,16 @@ module.exports = {
         let dead = message.guild.roles.cache.find((r) => r.name === "Dead")
         if (message.channel.name == "priv-aura-seer") {
             let isNight = await db.fetch(`isNight`)
-            if (isNight == "no") return await message.channel.send("Hmm, i think you should be a bot. You will 100% not fail this job. ||Not||")
-            if (!args[0]) return message.channel.send("Hey stupid, maybe try inserting an argument for once?")
+            if (isNight == "no") return await message.channel.send("You cannot check at day.")
+            if (!args[0]) return message.channel.send("Please include an alive player to check.")
             let guy = message.guild.members.cache.find((m) => m.nickname === args[0])
             let ownself = message.guild.members.cache.find((m) => m.nickname === message.member.nickname)
             if (!guy) return message.reply("Invalid Target!")
             if (!guy.roles.cache.has("606140092213624859") || !ownself.roles.cache.has("606140092213624859")) {
-                return await message.reply("Your or your target is not alive")
+                return await message.reply("Your or your target is not alive.")
             }
             if (guy == ownself) {
-                return message.channel.send("Checking yourself is like a whole new level of stupid.")
+                return message.channel.send("You can't check yourself...")
             } else {
                 let ability = await db.fetch(`auraCheck_${message.channel.id}`)
                 if (ability == "yes") {
@@ -55,14 +55,14 @@ module.exports = {
             }
         } else if (message.channel.name == "priv-seer") {
             let isNight = await db.fetch(`isNight`)
-            if (isNight == "no") return await message.channel.send("Hmm, i think you should be a bot. You will 100% not fail this job. ||Not||")
-            if (!args[0]) return message.channel.send("Woah, i discovered a whole new level of stupid...")
+            if (isNight == "no") return await message.channel.send("You cannot check at day.")
+            if (!args[0]) return message.channel.send("Please include an alive player to check.")
             let guy = message.guild.members.cache.find((m) => m.nickname === args[0])
             let ownself = message.guild.members.cache.find((m) => m.nickname === message.member.nickname)
-            if (!guy || guy == ownself) return await message.reply("Invalid Target")
+            if (!guy || guy == ownself) return await message.reply("Invalid Target!")
             if (!guy.roles.cache.has("606140092213624859") || !ownself.roles.cache.has("606140092213624859")) return await message.channel.send("You or your target is not alive!")
             let checked = await db.fetch(`seer_${message.channel.id}`)
-            if (checked == "yes") return await message.channel.send("You already used your ability for tonight!")
+            if (checked == "yes") return await message.channel.send("You have already used your ability for tonight!")
             let role = await db.fetch(`role_${guy.id}`)
 
             for (let i = 0; i < illu.length; i++) {
@@ -85,13 +85,13 @@ module.exports = {
             db.set(`seer_${message.channel.id}`, "yes")
         } else if (message.channel.name == "priv-detective") {
             let isNight = await db.fetch(`isNight`)
-            if (isNight == "no") return await message.channel.send("Hmm, i think you should be a bot. You will 100% not fail this job. ||Not||")
-            if (args.length != 2) return await message.channel.send("Honey, as Detective you need to select 2 players. This won't work. Come back to me when you have learned the basics.")
+            if (isNight == "no") return await message.channel.send("You cannot check at day.")
+            if (args.length != 2) return await message.channel.send("Please choose exactly 2 players to check.")
             let guy1 = message.guild.members.cache.find((m) => m.nickname === args[0])
             let guy2 = message.guild.members.cache.find((m) => m.nickname === args[1])
             let ownself = message.guild.members.cache.find((m) => m.nickname === message.member.nickname)
-            if (!guy1 || !guy2 || guy1 == ownself || guy2 == ownself || guy1 == guy2) return await message.reply("Invalid Target")
-            if (!guy1.roles.cache.has("606140092213624859") || !guy2.roles.cache.has("606140092213624859") || !ownself.roles.cache.has("606140092213624859")) return await message.channel.send("Yeah sure. Checking a dead player or checking while being dead. 1000000iq. Very smart. If you are smart, you can figure your information by yourself.")
+            if (!guy1 || !guy2 || guy1 == ownself || guy2 == ownself || guy1 == guy2) return await message.reply("Invalid Target!")
+            if (!guy1.roles.cache.has("606140092213624859") || !guy2.roles.cache.has("606140092213624859") || !ownself.roles.cache.has("606140092213624859")) return await message.channel.send("You or one of your targets is dead.")
             let ability = await db.fetch(`detCheck_${message.channel.id}`)
             if (ability == "yes") return await message.reply(`You have already used your ability for tonight!`)
 
@@ -144,18 +144,18 @@ module.exports = {
             db.set(`detCheck_${message.channel.id}`, "yes")
         } else if (message.channel.name == "priv-wolf-seer") {
             let isNight = await db.fetch(`isNight`)
-            if (isNight == "no") return await message.channel.send("Hmm, i think you should be a bot. You will 100% not fail this job. ||Not||")
+            if (isNight == "no") return await message.channel.send("You cannot check at day.")
             let dead = message.guild.roles.cache.find((r) => r.name === "Dead")
             let alive = message.guild.roles.cache.find((r) => r.name === "Alive")
             let guy = message.guild.members.cache.find((m) => m.nickname === args[0])
             let ability = await db.fetch(`wwseer_${message.channel.id}`)
-            if (ability == "yes") return await message.channel.send("Yup, cheating to win. That's the norm these days rite?")
-            if (message.member.roles.cache.has(dead.id)) return await message.channel.send("Yes. Checking while dead. Dude, you can't even tell the wolves your check.")
+            if (ability == "yes") return await message.channel.send("You have already used your ability for tonight!")
+            if (message.member.roles.cache.has(dead.id)) return await message.channel.send("You're dead. You cannot check.")
             if (message.member == guy || !guy) return await message.channel.send("Invalid Target")
-            if (guy.roles.cache.has(dead.id)) return await message.channel.send("Sure, why not? Checking a dead player. You can become the best pro player.")
+            if (guy.roles.cache.has(dead.id)) return await message.channel.send("Your target is dead.")
             let role = await db.fetch(`role_${guy.id}`)
             let roles = role.toLowerCase()
-            if (roles.includes("wolf") || role == "Sorcerer") return await message.channel.send("Ah yes. Checking a teammate. Gamethrowing is the best option mate.")
+            if (roles.includes("wolf") || role == "Sorcerer") return await message.channel.send("You can't check one of your werewolf teammates.")
             let ye = "no"
             for (let i = 1; i <= alive.members.size + dead.members.size; i++) {
                 console.log(i)
@@ -172,7 +172,7 @@ module.exports = {
                     }
                 }
             }
-            if (ye != "yes") return await message.channel.send("You probably forgot that you are the last wolf alive smartass")
+            if (ye != "yes") return await message.channel.send("You are the last wolf alive, so you cannot check.")
             let wwchat = message.guild.channels.cache.find((c) => c.name == "werewolves-chat")
 
             for (let i = 0; i < illu.length; i++) {
@@ -184,7 +184,7 @@ module.exports = {
                 }
             }
 
-            message.channel.send(`You checked **${args[0]} ${guy.user.username} (${role})**!${soloKillers.includes(role) ? " As a werewolf, you cannot kill this player at night." : ""}`)
+            message.channel.send(`You checked **${args[0]} ${guy.user.username} (${role})**!${soloKillers.includes(role) ? "As a werewolf, you cannot kill this player at night." : ""}`)
             wwchat.send(`The Wolf Seer checked **${args[0]} ${guy.user.username} (${role})**!`)
             db.set(`wwseer_${message.channel.id}`, "yes")
         } else if (message.channel.name == "priv-sorcerer") {
@@ -193,12 +193,12 @@ module.exports = {
             let ownself = message.guild.members.cache.find((m) => m.nickname === message.member.nickname)
             let guy = message.guild.members.cache.find((m) => m.nickname === args[0])
             if (!guy || guy == ownself) return await message.channel.send("Invalid Target!")
-            if (!guy.roles.cache.has(alive.id) || !ownself.roles.cache.has(alive.id)) return await message.channel.send("Bruh, I rather you gamethrow")
-            if (!isNight == "yes") return await message.channel.send("Hmm, i think you should be a bot. You will 100% not fail this job. ||Not||")
-            if (ability == "yes") return await message.channel.send("Yes, why not check every time... ")
+            if (!guy.roles.cache.has(alive.id) || !ownself.roles.cache.has(alive.id)) return await message.channel.send("You or your target is dead.")
+            if (!isNight == "yes") return await message.channel.send("You cannot check at day.")
+            if (ability == "yes") return await message.channel.send("You have already used your abiblity for tonight.")
             let rol = await db.fetch(`role_${guy.id}`)
             let role = rol.toLowerCase()
-            if (role.includes("wolf")) return await message.channel.send("I know you are a type of seer, but stop checking your teammates dumb.")
+            if (role.includes("wolf")) return await message.channel.send("You cannot check your wereolf teammates.")
 
             for (let i = 0; i < illu.length; i++) {
                 let disguised = db.get(`disguised_${illu[i]}`) || []
@@ -215,18 +215,18 @@ module.exports = {
             let isNight = db.get(`isNight`)
             let guy1 = message.guild.members.cache.find((m) => m.nickname === args[0]) || message.guild.members.cache.find((m) => m.id === args[0]) || message.guild.members.cache.find((m) => m.user.username === args[0]) || message.guild.members.cache.find((m) => m.user.tag === args[0])
             let guy2 = message.guild.members.cache.find((m) => m.nickname === args[1]) || message.guild.members.cache.find((m) => m.id === args[1]) || message.guild.members.cache.find((m) => m.user.username === args[1]) || message.guild.members.cache.find((m) => m.user.tag === args[1])
-            if (!message.member.roles.cache.has(alive.id)) return message.channel.send("When you are a ghost, you still can't check other people's spirit smart-ass")
-            if (isNight != "yes") return message.channel.send("Checking for spirits in the day makes you look dumb.")
-            if (args.length < 1 || args.length > 2) return message.channel.send("BRUH YOU NEED TO SELECT AT MOST 2 PEOPLE AND AT LEAST 1 PERSON!")
+            if (!message.member.roles.cache.has(alive.id)) return message.channel.send("You are dead. You cannot check.")
+            if (isNight != "yes") return message.channel.send("You cannot check at day.")
+            if (args.length < 1 || args.length > 2) return message.channel.send("You need to check either 1 or 2 people.")
             let check = []
             for (let i = 0; i < args.length; i++) {
                 if (i == 0) {
                     if (!guy1 || guy1.id == message.author.id) return message.reply("Invalid Target!")
-                    if (!guy1.roles.cache.has(alive.id)) return message.channel.send("You cannot check a dead player's spirit!")
+                    if (!guy1.roles.cache.has(alive.id)) return message.channel.send("You cannot check a dead player's spirit.")
                     check.push(guy1.nickname)
                 } else {
                     if (!guy2 || guy2.id == message.author.id) return message.reply("Invalid Target!")
-                    if (!guy2.roles.cache.has(alive.id)) return message.channel.send("You cannot check a dead player's spirit!")
+                    if (!guy2.roles.cache.has(alive.id)) return message.channel.send("You cannot check a dead player's spirit.")
                     check.push(guy2.nickname)
                 }
             }
